@@ -646,6 +646,49 @@ SPAN.uiJsonPretty-boolean { color: purple; }
 	margin-right: 0.4em;
 }
 
+.uiFilterBrowser-sort {
+	margin: 0.5em 0;
+	padding: 0.4em 0;
+	display: block;
+}
+
+.uiFilterBrowser-sortHeader {
+	margin-bottom: 0.3em;
+}
+
+.uiFilterBrowser-sortTitle {
+	font-weight: bold;
+	margin-right: 0.6em;
+}
+
+.uiFilterBrowser-sortRow {
+	margin-bottom: 0.25em;
+	white-space: nowrap;
+}
+
+.uiFilterBrowser-sortRow SELECT {
+	min-width: 10em;
+	display: inline-block;
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+.uiFilterBrowser-sortRow BUTTON,
+.uiFilterBrowser-sortHeader BUTTON {
+	height: 22px;
+	position: relative;
+	top: 1px;
+	min-width: 24px;
+}
+
+.uiFilterBrowser-toolbar {
+	margin-top: 0.4em;
+}
+
+.uiFilterBrowser-toolbar > * {
+	margin-right: 0.8em;
+}
+
 .uiFilterBrowser-row BUTTON {
 	height: 22px;
 	position: relative;

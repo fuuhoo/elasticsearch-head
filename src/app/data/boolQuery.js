@@ -26,6 +26,31 @@
 		setPage: function(page) {
 			this.search.from = this.config.size * (page - 1) + 1;
 		},
+		setSort: function(field, order) {
+			if(!field || field === "_score") {
+				this.search.sort = [];
+				return;
+			}
+			this.setSortList([{ field: field, order: order }]);
+		},
+		setSortList: function(list) {
+			this.search.sort = [];
+			(list || []).forEach(function(item) {
+				if(!item || !item.field || item.field === "_score") { return; }
+				var sortd = {};
+				sortd[item.field] = { order: (item.order === "asc") ? "asc" : "desc" };
+				this.search.sort.push(sortd);
+			}, this);
+		},
+		getSort: function() {
+			return this.search.sort[0] || null;
+		},
+		getSortList: function() {
+			return this.search.sort.map(function(item) {
+				var field = Object.keys(item)[0];
+				return { field: field, order: (item[field] && item[field].order) || "desc" };
+			});
+		},
 		addClause: function(value, field, op, bool) {
 			bool = bool || "should";
 			op = op || "match_all";

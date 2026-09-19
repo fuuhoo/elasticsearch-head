@@ -32,12 +32,17 @@
 		},
 		
 		_results_handler: function( filter, event ) {
+			if(! event || ! event.data) {
+				this.el.find("DIV.uiStructuredQuery-out").text( i18n.text("Query.FailAndUndo") || "Query failed" );
+				return;
+			}
 			var typeMap = {
 				"json": this._jsonResults_handler,
 				"table": this._tableResults_handler,
 				"csv": this._csvResults_handler
 			};
-			typeMap[ event.type ].call( this, event.data, event.metadata );
+			var handler = typeMap[ event.type ] || this._jsonResults_handler;
+			handler.call( this, event.data, event.metadata );
 		},
 		_jsonResults_handler: function( results ) {
 			this.el.find("DIV.uiStructuredQuery-out").empty().append( new ui.JsonPretty({ obj: results }));
@@ -46,14 +51,34 @@
 			this.el.find("DIV.uiStructuredQuery-out").empty().append( new ui.CSVTable({ results: results }));
 		},
 		_tableResults_handler: function( results, metadata ) {
+			if(! results || ! results.hits) {
+				this.el.find("DIV.uiStructuredQuery-out").text( i18n.text("Query.FailAndUndo") || "Query failed" );
+				return;
+			}
 			// hack up a QueryDataSourceInterface so that StructuredQuery keeps working without using a Query object
-			var qdi = new data.QueryDataSourceInterface({ metadata: metadata, query: new data.Query() });
+			var q = new data.Query();
+			var sorts = this.filter && this.filter.getCurrentSort && this.filter.getCurrentSort();
+			if(sorts && sorts.length) {
+				q.search.sort = sorts.map(function(s) {
+					var sortd = {};
+					sortd[s.field] = { order: s.order || "desc" };
+					return sortd;
+				});
+			}
+			var qdi = new data.QueryDataSourceInterface({ metadata: metadata, query: q });
 			var tab = new ui.Table( {
 				store: qdi,
 				height: 400,
-				width: this.out.innerWidth()
+				width: this.out.innerWidth(),
+				onHeaderClick: this._changeSort_handler
 			} ).attach(this.out.empty());
-			qdi._results_handler(qdi.config.query, results);
+			qdi._results_handler(q, results);
+		},
+
+		_changeSort_handler: function( table, wEv ) {
+			if(! this.filter) { return; }
+			this.filter.setSortFromHeader(wEv.column, wEv.dir);
+			this.filter.search();
 		},
 		
 		_showRawJSON : function() {
