@@ -15,14 +15,19 @@
 				// XHR request fails if the URL is not ending with a "/"
 				this.base_uri += "/";
 			}
-			if( this.config.auth_user ) {
-				var credentials = window.btoa( this.config.auth_user + ":" + this.config.auth_password );
-				$.ajaxSetup({
-					headers: {
-						"Authorization": "Basic " + credentials
-					}
-				});
+			var auth_user = this.config.auth_user || this.prefs.get("app-auth_user") || "";
+			var auth_password = this.config.auth_password;
+			if(auth_password == null || auth_password === "") {
+				auth_password = this.prefs.get("app-auth_password") || "";
 			}
+			// Always rewrite Authorization so reconnect without credentials clears a previous header.
+			var headers = {};
+			if( auth_user ) {
+				headers[ "Authorization" ] = "Basic " + window.btoa( auth_user + ":" + auth_password );
+			}
+			$.ajaxSetup({
+				headers: headers
+			});
 			this.cluster = new services.Cluster({ base_uri: this.base_uri });
 			this._clusterState = new services.ClusterState({
 				cluster: this.cluster

@@ -3798,7 +3798,7 @@
 	});
 
 })( this.app, this.i18n, this.Raphael );
-(function( $, app, i18n ) {
+	(function( $, app, i18n ) {
 
 	var ui = app.ns("ui");
 	var services = app.ns("services");
@@ -3823,41 +3823,62 @@
 			}
 		},
 
+		_parseUri: function(base_uri) {
+			base_uri = base_uri || "";
+			var url = base_uri;
+			var args = {};
+			var q = base_uri.indexOf("?");
+			if(q !== -1) {
+				url = base_uri.substring(0, q);
+				var argstr = base_uri.substring(q + 1);
+				args = argstr.split("&").reduce(function(r, p) {
+					if(!p) { return r; }
+					var parts = p.split("=");
+					r[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || "");
+					return r;
+				}, {});
+			}
+			return { url: url, args: args };
+		},
+
 		_reconnect_handler: function() {
 			var base_uri = this.el.find(".uiClusterConnect-uri").val();
-			var url;
-			if(base_uri.indexOf("?") !== -1) {
-				url = base_uri.substring(0, base_uri.indexOf("?")-1);
-			} else {
-				url = base_uri;
+			var parsed = this._parseUri(base_uri);
+			// Prefer dedicated form fields; fall back to legacy ?auth_user=&auth_password= in the URI.
+			var auth_user = this.el.find(".uiClusterConnect-user").val() || parsed.args["auth_user"] || "";
+			var auth_password = this.el.find(".uiClusterConnect-password").val();
+			if(auth_password === "" || auth_password == null) {
+				auth_password = parsed.args["auth_password"] || "";
 			}
-			var argstr = base_uri.substring(base_uri.indexOf("?")+1, base_uri.length);
-			var args = argstr.split("&").reduce(function(r, p) {
-				r[decodeURIComponent(p.split("=")[0])] = decodeURIComponent(p.split("=")[1]);
-				return r;
-			}, {});
+			this.prefs.set("app-base_uri", parsed.url);
+			this.prefs.set("app-auth_user", auth_user);
+			this.prefs.set("app-auth_password", auth_password);
 			$("body").empty().append(new app.App("body", { id: "es",
-				base_uri: url,
-			 	auth_user : args["auth_user"] || "",
-			 	auth_password : args["auth_password"] || ""
+				base_uri: parsed.url,
+				auth_user : auth_user,
+				auth_password : auth_password
 			}));
 		},
 
 		_main_template: function() {
+			var auth_user = this.prefs.get("app-auth_user") || "";
+			var auth_password = this.prefs.get("app-auth_password") || "";
+			function onEnter(ev) {
+				if(ev.which === 13) {
+					ev.preventDefault();
+					this._reconnect_handler();
+				}
+			}
 			return { tag: "SPAN", cls: "uiClusterConnect", children: [
-				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-uri", onkeyup: function( ev ) {
-					if(ev.which === 13) {
-						ev.preventDefault();
-						this._reconnect_handler();
-					}
-				}.bind(this), id: this.id("baseUri"), value: this.cluster.base_uri },
+				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-uri", onkeyup: onEnter.bind(this), id: this.id("baseUri"), value: this.cluster.base_uri },
+				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-user", placeholder: i18n.text("Header.AuthUser") || "Username", title: i18n.text("Header.AuthUser") || "Username", onkeyup: onEnter.bind(this), id: this.id("authUser"), value: auth_user },
+				{ tag: "INPUT", type: "password", cls: "uiClusterConnect-password", placeholder: i18n.text("Header.AuthPassword") || "Password", title: i18n.text("Header.AuthPassword") || "Password", onkeyup: onEnter.bind(this), id: this.id("authPassword"), value: auth_password },
 				{ tag: "BUTTON", type: "button", text: i18n.text("Header.Connect"), onclick: this._reconnect_handler }
 			]};
 		}
 	});
 
 })( this.jQuery, this.app, this.i18n );
-
 
 (function( $, app, i18n ) {
 
@@ -4601,14 +4622,19 @@
 				// XHR request fails if the URL is not ending with a "/"
 				this.base_uri += "/";
 			}
-			if( this.config.auth_user ) {
-				var credentials = window.btoa( this.config.auth_user + ":" + this.config.auth_password );
-				$.ajaxSetup({
-					headers: {
-						"Authorization": "Basic " + credentials
-					}
-				});
+			var auth_user = this.config.auth_user || this.prefs.get("app-auth_user") || "";
+			var auth_password = this.config.auth_password;
+			if(auth_password == null || auth_password === "") {
+				auth_password = this.prefs.get("app-auth_password") || "";
 			}
+			// Always rewrite Authorization so reconnect without credentials clears a previous header.
+			var headers = {};
+			if( auth_user ) {
+				headers[ "Authorization" ] = "Basic " + window.btoa( auth_user + ":" + auth_password );
+			}
+			$.ajaxSetup({
+				headers: headers
+			});
 			this.cluster = new services.Cluster({ base_uri: this.base_uri });
 			this._clusterState = new services.ClusterState({
 				cluster: this.cluster

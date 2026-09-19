@@ -68,6 +68,8 @@ i18n.setKeys({
 	"Header.ClusterHealth": "叢集健康值: {0} ({1} of {2})",
 	"Header.ClusterNotConnected": "叢集健康值: 未連接",
 	"Header.Connect": "連接",
+	"Header.AuthUser": "使用者名稱",
+	"Header.AuthPassword": "密碼",
 	"Nav.AnyRequest": "複合查詢",
 	"Nav.Browser": "資料瀏覽",
 	"Nav.ClusterHealth": "叢集健康值",

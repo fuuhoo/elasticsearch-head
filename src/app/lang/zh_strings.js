@@ -68,6 +68,8 @@ i18n.setKeys({
 	"Header.ClusterHealth": "集群健康值: {0} ({1} of {2})",
 	"Header.ClusterNotConnected": "集群健康值: 未连接",
 	"Header.Connect": "连接",
+	"Header.AuthUser": "用户名",
+	"Header.AuthPassword": "密码",
 	"Nav.AnyRequest": "复合查询",
 	"Nav.Browser": "数据浏览",
 	"Nav.ClusterHealth": "集群健康值",

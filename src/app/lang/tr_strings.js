@@ -68,6 +68,8 @@ i18n.setKeys({
 	"Header.ClusterHealth": "Küme Durumu: {0} ({1} de {2})",
 	"Header.ClusterNotConnected": "Küme Durumu: Bağlı Değil",
 	"Header.Connect": "Bağlan",
+	"Header.AuthUser": "Kullanıcı adı",
+	"Header.AuthPassword": "Parola",
 	"Nav.AnyRequest": "Özel Sorgu",
 	"Nav.Browser": "Görüntüle",
 	"Nav.ClusterHealth": "Küme Durumu",

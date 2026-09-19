@@ -1,3 +1,17 @@
 .uiClusterConnect-uri {
-	width: 280px;
+	width: 220px;
+}
+
+.uiClusterConnect-user {
+	width: 100px;
+	margin-left: 4px;
+}
+
+.uiClusterConnect-password {
+	width: 100px;
+	margin-left: 4px;
+}
+
+.uiClusterConnect BUTTON {
+	margin-left: 4px;
 }

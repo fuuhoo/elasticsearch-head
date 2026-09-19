@@ -68,6 +68,8 @@ i18n.setKeys({
 	"Header.ClusterHealth": "Trạng thái cluster: {0} ({1} trong {2})",
 	"Header.ClusterNotConnected": "Trạng thái cluster: không có kết nối",
 	"Header.Connect": "Kết nối",
+	"Header.AuthUser": "Tên đăng nhập",
+	"Header.AuthPassword": "Mật khẩu",
 	"Nav.AnyRequest": "Gửi request",
 	"Nav.Browser": "Trình",
 	"Nav.ClusterHealth": "Trạng thái cluster",

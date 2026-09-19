@@ -68,6 +68,8 @@ i18n.setKeys({
 	"Header.ClusterHealth": "cluster health: {0} ({1} of {2})",
 	"Header.ClusterNotConnected": "cluster health: not connected",
 	"Header.Connect": "接続",
+	"Header.AuthUser": "ユーザー名",
+	"Header.AuthPassword": "パスワード",
 	"Nav.AnyRequest": "Any Request",
 	"Nav.Browser": "Browser",
 	"Nav.ClusterHealth": "Cluster Health",
