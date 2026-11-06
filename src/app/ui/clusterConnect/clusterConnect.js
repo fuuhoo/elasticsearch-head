@@ -70,7 +70,7 @@
 				}
 			}
 			return { tag: "SPAN", cls: "uiClusterConnect", children: [
-				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-uri", onkeyup: onEnter.bind(this), id: this.id("baseUri"), value: this.cluster.base_uri },
+				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-uri", onkeyup: onEnter.bind(this), id: this.id("baseUri"), value: this.cluster.target || this.cluster.base_uri },
 				{ tag: "INPUT", type: "text", cls: "uiClusterConnect-user", placeholder: i18n.text("Header.AuthUser") || "Username", title: i18n.text("Header.AuthUser") || "Username", onkeyup: onEnter.bind(this), id: this.id("authUser"), value: auth_user },
 				{ tag: "INPUT", type: "password", cls: "uiClusterConnect-password", placeholder: i18n.text("Header.AuthPassword") || "Password", title: i18n.text("Header.AuthPassword") || "Password", onkeyup: onEnter.bind(this), id: this.id("authPassword"), value: auth_password },
 				{ tag: "BUTTON", type: "button", text: i18n.text("Header.Connect"), onclick: this._reconnect_handler }

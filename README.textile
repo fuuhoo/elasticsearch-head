@@ -47,15 +47,18 @@ This will automatically download the appropriate version of elasticsearch-head f
 
 h4. Running with the local proxy
 
-This is an _experimental feature_ which creates a local proxy for many remote elasticsearch clusters
+Browser requests are same-origin to the local proxy, which forwards them to
+whatever Elasticsearch base URI the user typed in the UI — nothing is fixed
+server-side, so no CORS is needed in Elasticsearch. See @proxy/README.md@.
 
-* configure clusters in proxy/clusters
-* create a file per remote cluster you want to connect to ( see @localhost9200.json@ as example )
-* requires node >= 6.0 
 * @npm install@
-* @npm run proxy@
+* @npm run start@   (grunt connect on http://localhost:9100 with the proxy middleware built in), or
+* @npm run proxy@   (standalone server on the same port)
 
-At the moment it only works with @grunt server@ running on http://localhost:9100
+@curl -i http://localhost:9100/es/_cluster/health -H "X-ES-Target: http://localhost:9200"@
+
+The old per-cluster config files under @proxy/clusters/@ are kept for
+reference only and are no longer read.
 
 h4. Alternatives
 
@@ -67,9 +70,11 @@ h3. Connecting to elasticsearch
 
 By default elasticsearch exposes a http rest API on port 9200 which elasticsearch-head connects to.
 
-h4. Enable CORS in elasticsearch
+h4. Enable CORS in elasticsearch (alternative to the local proxy)
 
-When not running as a Chrome extension or as a plugin of elasticsearch (which is not even possible from version 5), you must enable "CORS":https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html in elasticsearch, or else your browser will reject elasticsearch-head's requests due to violation of the same-origin policy.
+The local proxy (see above) makes requests same-origin and is the default
+way to avoid CORS. If you instead serve elasticsearch-head from a different
+origin without the proxy, you must enable "CORS":https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html in elasticsearch, or else your browser will reject elasticsearch-head's requests due to violation of the same-origin policy. (Note: as a Chrome extension or as a plugin of elasticsearch, CORS is not needed.)
 
 In elasticsearch configuration;
 

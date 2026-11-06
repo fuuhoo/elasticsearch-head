@@ -169,7 +169,7 @@
 						open: true,
 						title: i18n.text("AnyRequest.Query"),
 						body: { tag: "DIV", children: [
-							{ tag: "INPUT", type: "text", name: "base_uri", value: this.config.cluster.config.base_uri },
+							{ tag: "INPUT", type: "text", name: "base_uri", value: this.config.cluster.target || this.config.cluster.config.base_uri },
 							{ tag: "BR" },
 							{ tag: "INPUT", type: "text", name: "path", value: this.config.path },
 							{ tag: "SELECT", name: "method", children: ["POST", "GET", "PUT", "HEAD", "DELETE"].map(ut.option_template) },

@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
 
 	var fileSets = require("./grunt_fileSets.js");
+	var esProxy = require("./proxy/esProxy.js");
 
 	// Project configuration.
 	grunt.initConfig({
@@ -94,9 +95,17 @@ module.exports = function(grunt) {
 		connect: {
 			server: {
 				options: {
+					hostname:'0.0.0.0',
 					port: 9100,
 					base: '.',
-					keepalive: true
+					keepalive: true,
+					// Local dynamic proxy for CORS: http://localhost:9100/es/* is
+					// forwarded to the Elasticsearch base URI the user entered
+					// (sent per-request as X-ES-Target by the UI). The target is
+					// NOT fixed anywhere server-side.
+					middleware: function(connect, options, middleware) {
+						return [esProxy.createMiddleware()].concat(middleware);
+					}
 				}
 			}
 		}

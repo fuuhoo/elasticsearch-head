@@ -56,6 +56,16 @@
 			}.bind(this));
 			this.statEl.text( i18n.text("Header.ClusterNotConnected") ).css("background", "grey");
 			this._clusterState.refresh();
+			// Cluster.onerror is called by Cluster.request on proxy/ES errors.
+			if(this.config.cluster) {
+				this.config.cluster.onerror = function(err) {
+					var data = err && (err.responseJSON || (typeof err === "object" && (err.error || err.reason) ? err : null));
+					if(! data && err && err.responseText) { try { data = JSON.parse(err.responseText); } catch(e) {} }
+					if(data && data.error === 'es_proxy_upstream_unreachable') {
+						statEl.text(data.reason || 'ES unreachable').attr('title', data.reason || '').css('background', 'grey');
+					}
+				};
+			}
 		},
 		_main_template: function() { return (
 			{ tag: "DIV", cls: this._baseCls, children: [
